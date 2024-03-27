@@ -1,0 +1,215 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+body{
+    color: white;
+    background-color: #212121;
+}
+
+#page{
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 260px 1fr;
+}
+
+nav{
+    min-width: 260px;
+    height: 100vh;
+    width: 13.5vw;
+    background-color: #171717;
+    transition:
+            display 0.5s;
+
+    display: grid;
+    grid-template-rows: 7% 1fr 7%;
+}
+
+#newChatButtonBox{
+    /*border: 1px solid red;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#newChatButton{
+    font-family: Roboto, sans-serif;
+    font-weight: 550;
+    /*background-color: #212121;*/
+    /*border: 1px solid red;*/
+    height: 60%;
+    width: 85%;
+    border-radius: 8px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#newChatButton:hover{
+    background-color: #212121;
+    cursor: pointer;
+}
+
+#newChatButton > img{
+    max-height: 30px;
+    border-radius: 80px;
+    margin-right: 20px;
+    margin-left: 5px;
+}
+
+#chatSide{
+    display: grid;
+    grid-template-rows: 7% 80% 1fr;
+}
+
+#messageArea{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#messageContainer{
+    max-height: 20%;
+    width: 85%;
+    max-width: 800px;
+    background-color: #212121;
+    border: 1px solid #4b4b4b;
+    border-radius: 12px;
+    display: grid;
+    grid-auto-columns: 90% 1fr;
+    padding: 20px
+}
+
+#messageBox{
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    outline: none;
+    font-size: 0.9rem;
+    font-family: Arial, sans-serif;
+    font-weight: 525;
+    padding: 1.5rem;
+    margin: -1.5rem;
+
+}
+
+#modelSelectorNav{
+    background-color: #212121;
+}
+
+#chatContainer{
+    display: flex;
+    justify-content: center;
+    /*border: 1px solid red;*/
+    /*align-items: center;*/
+    max-height: 85vh;
+}
+
+#chatBoxesContainer{
+    /*border: 1px solid green;*/
+    max-height: 105%;
+    height: 100%;
+    width: 100%;
+    max-width: 700px;
+    overflow-x: hidden;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    overflow-y: auto; /* Add this to enable scrolling when necessary */
+    /*display: flex;*/
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#welcomeMessageBox{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#welcomeMessageBox > p{
+    font-size: 1.5rem;
+    font-family: Roboto, sans-serif;
+    font-weight: 550;
+}
+
+#chatBoxesContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.messageContainer{
+    display: flex;
+    flex-direction: row;
+    font-family: Arial, sans-serif;
+    margin-bottom: 30px;
+
+}
+
+.userProfilePicture{
+    max-width: 40px;
+    min-width: 40px;
+}
+
+.userProfilePicture > img{
+    width: 100%;
+    border-radius: 120px;
+}
+
+.userName{
+    font-size: 1.2rem;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.message{
+    font-family: Roboto, sans-serif;
+    letter-spacing: 1px;
+    margin-left: 10px;
+}
+
+
