@@ -43,14 +43,18 @@ table {
 }
 
 body{
-    color: white;
-    background-color: #212121;
 }
 
 #page{
     display: grid;
     height: 100vh;
     grid-template-columns: 260px 1fr;
+    color: white;
+    background-color: #212121;
+}
+
+#page.light{
+    background-color: #FFFFFF;
 }
 
 nav{
@@ -64,12 +68,19 @@ nav{
     display: grid;
     grid-template-rows: 7% 1fr 7%;
 }
+nav.light{
+    background-color: #F9F9F9;
+}
 
 #newChatButtonBox{
     /*border: 1px solid red;*/
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#newChatButtonBox{
+    color: black;
 }
 
 #newChatButton{
@@ -88,6 +99,10 @@ nav{
 #newChatButton:hover{
     background-color: #212121;
     cursor: pointer;
+}
+
+#newChatButton.light:hover{
+    background-color: #FFFFFF;
 }
 
 #newChatButton > img{
@@ -120,6 +135,10 @@ nav{
     padding: 20px
 }
 
+#messageContainer.light{
+    background-color: #FFFFFF;
+}
+
 #messageBox{
     background-color: transparent;
     border: none;
@@ -133,8 +152,16 @@ nav{
 
 }
 
+#messageBox.light{
+    color: #000
+}
+
 #modelSelectorNav{
     background-color: #212121;
+}
+
+#modelSelectorNav{
+    background-color: #FFFFFF;
 }
 
 #chatContainer{
@@ -161,12 +188,20 @@ nav{
     align-items: center;
 }
 
+#chatBoxesContainer.light{
+    color: black
+}
+
 #welcomeMessageBox{
     height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#welcomeMessageBox.light{
+    color: black;
 }
 
 #welcomeMessageBox > p{
@@ -211,5 +246,61 @@ nav{
     letter-spacing: 1px;
     margin-left: 10px;
 }
+
+
+.select-container {
+    position: relative;
+    width: 200px;
+}
+
+.select-container.light{
+    color: black;
+    font-family: Roboto, sans-serif;
+}
+
+.selected-option {
+    padding: 10px;
+    /*border: 1px solid #ccc;*/
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 10px
+}
+
+.selected-option.light:hover{
+    background-color: #F9F9F9;
+}
+
+.options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    border-radius: 8px;
+    border-top: none;
+    display: none;
+    /*background: white;*/
+    z-index: 10;
+    margin-left: 10px;
+}
+
+.options li {
+    list-style: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.options li:hover {
+    background-color: #f2f2f2;
+}
+
+.show {
+    display: block;
+}
+
 
 

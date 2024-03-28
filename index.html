@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="page">
-        <nav>
-            <div id="newChatButtonBox">
-                <div id="newChatButton">
+    <div id="page" class="light">
+        <nav class="light">
+            <div id="newChatButtonBox" class="light">
+                <div id="newChatButton" class="light">
                     <img src="https://www.kunstloft.fr/wordpress/fr_FR/fr/wp-content/uploads/2023/08/a4411c44-c1cc-45ca-bf4b-2ecaf5172ba8.jpg" alt="aiPP">
                     New Chat
                 </div>
@@ -23,20 +23,27 @@
             <div></div>
         </nav>
 
-        <div id="chatSide">
-            <div id="modelSelectorNav">
-
+        <div id="chatSide" class="light">
+            <div id="modelSelectorNav" class="light">
+                <div class="select-container light">
+                    <div class="selected-option light" onclick="toggleOptions()">
+                        <p id="model"></p>
+                        <p>▼</p>
+                    </div>
+                    <ul class="options light">
+                    </ul>
+                </div>
             </div>
-            <div id="chatContainer">
-                <div id="chatBoxesContainer">
-                    <div id="welcomeMessageBox">
+            <div id="chatContainer" class="light">
+                <div id="chatBoxesContainer" class="light">
+                    <div id="welcomeMessageBox" class="light">
                         <p id="howCanIHelpMessage">How can I help you today ?</p>
                     </div>
                 </div>
             </div>
-            <div id="messageArea">
-                <div id="messageContainer">
-                    <input type="text" id="messageBox" name="messageBox" placeholder="Message AI..."/>
+            <div id="messageArea" class="light">
+                <div id="messageContainer" class="light">
+                    <input type="text" class="light" id="messageBox" name="messageBox" placeholder="Message AI..."/>
                 </div>
             </div>
         </div>

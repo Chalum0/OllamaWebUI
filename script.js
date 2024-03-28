@@ -3,17 +3,17 @@ myHeaders.append("Content-Type", "text/plain");
 
 let chatHistory = {}
 
-// let messages = []
+let messages = []
 
-let userPP = "https://files.oaiusercontent.com/file-72BLbL8DRxnbJGWA8QiZ02Gf?se=2024-03-27T21%3A00%3A08Z&sp=r&sv=2021-08-06&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3Dbcb991d8-5de8-41a7-810e-8be347fdd5bd.webp&sig=PsQ9qOdHYST5d0deJ1QNJifsdCdZuUCHv07Q8370Ko0%3D"
-let aiPP = "https://www.kunstloft.fr/wordpress/fr_FR/fr/wp-content/uploads/2023/08/a4411c44-c1cc-45ca-bf4b-2ecaf5172ba8.jpg"
+const userPP = "https://th.bing.com/th/id/OIP.zc3XRPZxUt4Xt7zDZYLa_wAAAA?rs=1&pid=ImgDetMain"
+const aiPP = "https://www.kunstloft.fr/wordpress/fr_FR/fr/wp-content/uploads/2023/08/a4411c44-c1cc-45ca-bf4b-2ecaf5172ba8.jpg"
 
-function getResponseFromOllama(prompt) {
+function getResponseFromOllama(prompt, model) {
     // Push the new user message to the messages array
     messages.push({"role": 'user', "content": prompt}); // Fixed: use the prompt parameter instead of the string "prompt"
 
     const raw = JSON.stringify({
-        model: "llama2-uncensored",
+        model: model,
         messages: messages, // Fixed: Changed from `templates` to `messages` as per the API documentation
         stream: true
     });
@@ -25,8 +25,8 @@ function getResponseFromOllama(prompt) {
         redirect: "follow"
     };
 
-    createMessageElement(userPP, "You", prompt)
-    const paragraph = createMessageElement(aiPP, "llama2-uncensored", "")
+    // createMessageElement(userPP, "You", prompt)
+    const paragraph = createMessageElement(aiPP, model, "")
     const chatBoxesContainer = document.getElementById('chatBoxesContainer');
     chatBoxesContainer.scrollTop = chatBoxesContainer.scrollHeight;
 
@@ -43,7 +43,10 @@ function getResponseFromOllama(prompt) {
                     if (done) {
                         console.log('Stream finished.');
                         messages.push({"role": "assistant", "content": chat}); // Append the accumulated response once done
-                        console.log(messages); // Log messages at the end of the stream
+                        // console.log(messages); // Log messages at the end of the stream
+                        let newMSG = reverseRole(messages)
+                        console.log(newMSG)
+                        getResponseFromOllama(newMSG[newMSG.length-1].content, model)
                         return;
                     }
 
@@ -72,7 +75,7 @@ function getResponseFromOllama(prompt) {
         .catch(error => console.error('Fetch error:', error));
 }
 
-function createMessageElement(imageUrl, userName, messageText) {
+function createMessalgeElement(imageUrl, userName, messageText) {
     // Create messageContainer div
     const messageContainer = document.createElement('div');
     messageContainer.className = 'messageContainer';
@@ -122,35 +125,100 @@ function createMessageElement(imageUrl, userName, messageText) {
     return messageParagraph
 }
 
-function getModels(){
-
-    fetch('http://localhost:11434/api/tags', {
-        method: 'GET', // Specifies the request method
-        headers: {
-            'Content-Type': 'application/json', // Sets the content type to JSON
-            // Include additional headers if necessary
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json(); // Parses the JSON response
-        })
-        .then(data => {
-            console.log(data); // Handles the data from the response
-        })
-        .catch(error => {
-            console.error('There was a problem with your fetch operation:', error);
+async function getModels() {
+    try {
+        const response = await fetch('http://localhost:11434/api/tags', {
+            method: 'GET', // Specifies the request method
+            headers: {
+                'Content-Type': 'application/json', // Sets the content type to JSON
+                // Include additional headers if necessary
+            },
         });
 
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data; // Return the data collected from the API
+    } catch (error) {
+        console.error('There was a problem with your fetch operation:', error);
+        throw error; // Optionally re-throw the error if you want to handle it outside
+    }
 }
 
 document.querySelector("#messageBox").addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
         document.querySelector("#welcomeMessageBox").style.display = "none"
-        getResponseFromOllama(document.querySelector("#messageBox").value)
+        getResponseFromOllama(document.querySelector("#messageBox").value, document.querySelector("#model").textContent)
         document.querySelector("#messageBox").value = ""
     }
 })
+
+function toggleOptions() {
+    document.querySelector('.options').classList.toggle('show');
+}
+
+function selectOption(value) {
+    document.querySelector('#model').textContent = value;
+    toggleOptions();
+}
+
+function hideModelList(){
+    var dropdowns = document.getElementsByClassName("options");
+    for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+    }
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.selected-option')) {
+        hideModelList()
+    }
+}
+
+window.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
+        return;
+    }
+    document.querySelector("#messageBox").focus()
+});
+
+function removeLatest(string) {
+    return string.substring(0, string.length - 7);
+}
+
+getModels().then(data => {
+    // console.log(data.models)
+    let models = data.models
+    selectOption(removeLatest(models[0].name))
+    for (let i = 0; i < models.length ; i++) {
+        let listElement = document.createElement("li")
+        listElement.textContent = removeLatest(models[i].name)
+        document.querySelector(".options").appendChild(listElement)
+        let name = removeLatest(models[i].name)
+        listElement.addEventListener('click', () => {
+            selectOption(name)
+        })
+    }
+    hideModelList()
+})
+
+function reverseRole(msgList){
+    let msgLST = []
+    for (let i = 0; i < msgList.length; i++){
+        if (msgList[i].role === "user"){
+            msgLST.push({"role": "assistant", "content": msgList[i].content})
+        }
+        if (msgList[i].role === "assistant"){
+            msgLST.push({"role": "user", "content": msgList[i].content})
+        }
+
+    }
+    return msgLST
+}
 
