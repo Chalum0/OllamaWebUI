@@ -77,9 +77,10 @@ nav.light{
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
 }
 
-#newChatButtonBox{
+#newChatButtonBox.light{
     color: black;
 }
 
@@ -160,7 +161,7 @@ nav.light{
     background-color: #212121;
 }
 
-#modelSelectorNav{
+#modelSelectorNav.light{
     background-color: #FFFFFF;
 }
 
@@ -251,11 +252,14 @@ nav.light{
 .select-container {
     position: relative;
     width: 200px;
+    font-family: Roboto, sans-serif;
+    font-weight: bolder;
+    color: white;
+
 }
 
 .select-container.light{
     color: black;
-    font-family: Roboto, sans-serif;
 }
 
 .selected-option {
@@ -266,7 +270,12 @@ nav.light{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: 10px
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.selected-option:hover{
+    background-color: #171717;
 }
 
 .selected-option.light:hover{
@@ -278,7 +287,7 @@ nav.light{
     top: 100%;
     left: 0;
     right: 0;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     margin-top: 5px;
     border-radius: 8px;
     border-top: none;
@@ -286,16 +295,33 @@ nav.light{
     /*background: white;*/
     z-index: 10;
     margin-left: 10px;
+    background-color: #171717;
+}
+.options.light{
+    background-color: #f2f2f2;
 }
 
 .options li {
     list-style: none;
     padding: 10px;
     cursor: pointer;
+    /*border-radius: 8px;*/
 }
 
-.options li:hover {
-    background-color: #f2f2f2;
+.options li:first-child{
+    border-radius: 8px 8px 0 0;
+}
+
+.options li:last-child{
+    border-radius: 0 0 8px 8px;
+}
+
+.options li:hover{
+    background-color: #4b4b4b;
+}
+
+.options li.light:hover {
+    background-color: #cbcbcb;
 }
 
 .show {

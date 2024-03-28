@@ -3,6 +3,8 @@ myHeaders.append("Content-Type", "text/plain");
 
 let chatHistory = {}
 
+let dark = true
+
 let messages = []
 
 const userPP = "https://th.bing.com/th/id/OIP.zc3XRPZxUt4Xt7zDZYLa_wAAAA?rs=1&pid=ImgDetMain"
@@ -25,7 +27,7 @@ function getResponseFromOllama(prompt, model) {
         redirect: "follow"
     };
 
-    // createMessageElement(userPP, "You", prompt)
+    createMessageElement(userPP, "You", prompt)
     const paragraph = createMessageElement(aiPP, model, "")
     const chatBoxesContainer = document.getElementById('chatBoxesContainer');
     chatBoxesContainer.scrollTop = chatBoxesContainer.scrollHeight;
@@ -44,10 +46,10 @@ function getResponseFromOllama(prompt, model) {
                         console.log('Stream finished.');
                         messages.push({"role": "assistant", "content": chat}); // Append the accumulated response once done
                         // console.log(messages); // Log messages at the end of the stream
-                        let newMSG = reverseRole(messages)
-                        console.log(newMSG)
-                        getResponseFromOllama(newMSG[newMSG.length-1].content, model)
-                        return;
+                        // let newMSG = reverseRole(messages)
+                        // console.log(newMSG)
+                        // getResponseFromOllama(newMSG[newMSG.length-1].content, model)
+                        // return;
                     }
 
                     // Decode and process the chunk
@@ -74,8 +76,7 @@ function getResponseFromOllama(prompt, model) {
         })
         .catch(error => console.error('Fetch error:', error));
 }
-
-function createMessalgeElement(imageUrl, userName, messageText) {
+function createMessageElement(imageUrl, userName, messageText) {
     // Create messageContainer div
     const messageContainer = document.createElement('div');
     messageContainer.className = 'messageContainer';
@@ -124,7 +125,6 @@ function createMessalgeElement(imageUrl, userName, messageText) {
     document.getElementById('chatBoxesContainer').appendChild(messageContainer);
     return messageParagraph
 }
-
 async function getModels() {
     try {
         const response = await fetch('http://localhost:11434/api/tags', {
@@ -146,24 +146,13 @@ async function getModels() {
         throw error; // Optionally re-throw the error if you want to handle it outside
     }
 }
-
-document.querySelector("#messageBox").addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-        document.querySelector("#welcomeMessageBox").style.display = "none"
-        getResponseFromOllama(document.querySelector("#messageBox").value, document.querySelector("#model").textContent)
-        document.querySelector("#messageBox").value = ""
-    }
-})
-
 function toggleOptions() {
     document.querySelector('.options').classList.toggle('show');
 }
-
 function selectOption(value) {
     document.querySelector('#model').textContent = value;
     toggleOptions();
 }
-
 function hideModelList(){
     var dropdowns = document.getElementsByClassName("options");
     for (var i = 0; i < dropdowns.length; i++) {
@@ -173,41 +162,9 @@ function hideModelList(){
         }
     }
 }
-
-// Close the dropdown if the user clicks outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.selected-option')) {
-        hideModelList()
-    }
-}
-
-window.addEventListener('keydown', function(event) {
-    if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
-        return;
-    }
-    document.querySelector("#messageBox").focus()
-});
-
 function removeLatest(string) {
     return string.substring(0, string.length - 7);
 }
-
-getModels().then(data => {
-    // console.log(data.models)
-    let models = data.models
-    selectOption(removeLatest(models[0].name))
-    for (let i = 0; i < models.length ; i++) {
-        let listElement = document.createElement("li")
-        listElement.textContent = removeLatest(models[i].name)
-        document.querySelector(".options").appendChild(listElement)
-        let name = removeLatest(models[i].name)
-        listElement.addEventListener('click', () => {
-            selectOption(name)
-        })
-    }
-    hideModelList()
-})
-
 function reverseRole(msgList){
     let msgLST = []
     for (let i = 0; i < msgList.length; i++){
@@ -221,4 +178,61 @@ function reverseRole(msgList){
     }
     return msgLST
 }
+function setDarkMode(darkMode){
+    // Selects all elements in the document
+    const elements = document.querySelectorAll('*');
 
+    // Loops through each element
+    elements.forEach(element => {
+        // If darkMode is false, add the 'light' class, otherwise remove it
+        if (!darkMode) {
+            element.classList.add('light');
+        } else {
+            element.classList.remove('light');
+        }
+    });
+}
+
+function listModels(){
+    getModels().then(data => {
+        // console.log(data.models)
+        let models = data.models
+        selectOption(removeLatest(models[0].name))
+        for (let i = 0; i < models.length ; i++) {
+            let listElement = document.createElement("li")
+            listElement.textContent = removeLatest(models[i].name)
+            if (!dark){
+                listElement.classList.add("light")
+            }
+            document.querySelector(".options").appendChild(listElement)
+            let name = removeLatest(models[i].name)
+            listElement.addEventListener('click', () => {
+                selectOption(name)
+            })
+        }
+        hideModelList()
+    })
+}
+
+document.querySelector("#messageBox").addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        document.querySelector("#welcomeMessageBox").style.display = "none"
+        getResponseFromOllama(document.querySelector("#messageBox").value, document.querySelector("#model").textContent)
+        document.querySelector("#messageBox").value = ""
+    }
+})
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.selected-option')) {
+        hideModelList()
+    }
+}
+window.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
+        return;
+    }
+    document.querySelector("#messageBox").focus()
+});
+
+listModels()
+setDarkMode(dark)
