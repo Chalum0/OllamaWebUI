@@ -78,6 +78,7 @@ nav.light{
     justify-content: center;
     align-items: center;
     color: white;
+    /*margin-top: 10px;*/
 }
 
 #newChatButtonBox.light{
@@ -328,5 +329,45 @@ nav.light{
     display: block;
 }
 
+#chatListContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+#chatList{
+    /*border: 1px solid red;*/
+    width: 75%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#chatList>li{
+    margin-bottom: 15px;
+    /*border: 1px solid green;*/
+    max-width: 100%;
+    width: 100%;
+    height: 5vh;
+    max-height: 5vh;
+    min-height: 30px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #212121;
+    border-radius: 8px;
+    font-family: Roboto, sans-serif;
+    font-weight: normal;
+    font-size: 1rem;
+    /*padding: 20px;*/
+}
+#chatList>li>p{
+    margin-left: 20px;
+}
+
+#chatList>li.light{
+    background-color: #FFFFFF;
+}
 
