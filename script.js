@@ -3,13 +3,140 @@ myHeaders.append("Content-Type", "text/plain");
 
 let chatHistory = {}
 
-let dark = true
+let chatID = 0
+let chatData = {}
+let title = "New Chat"
 
 let messages = []
 
 const userPP = "https://th.bing.com/th/id/OIP.zc3XRPZxUt4Xt7zDZYLa_wAAAA?rs=1&pid=ImgDetMain"
 const aiPP = "https://www.kunstloft.fr/wordpress/fr_FR/fr/wp-content/uploads/2023/08/a4411c44-c1cc-45ca-bf4b-2ecaf5172ba8.jpg"
 
+function saveOrUpdateDataInIndexedDB(data) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('myDatabase', 1);
+
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('jsonData')) {
+                db.createObjectStore('jsonData', { keyPath: 'id' });
+            }
+        };
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['jsonData'], 'readwrite');
+            const objectStore = transaction.objectStore('jsonData');
+            const putRequest = objectStore.put({ id: 'ollamaWebUIChatHistory', data: data });
+
+            putRequest.onsuccess = function() {
+                resolve('Data saved/updated successfully.');
+            };
+
+            putRequest.onerror = function(event) {
+                reject('Failed to save/update data:', event.target.error);
+            };
+        };
+
+        request.onerror = function(event) {
+            reject('Database error:', event.target.error);
+        };
+    });
+}
+function loadDataFromIndexedDB() {
+    const request = indexedDB.open('myDatabase', 1);
+
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['jsonData']);
+        const objectStore = transaction.objectStore('jsonData');
+        const getRequest = objectStore.get('ollamaWebUIChatHistory'); // Use the same key as when you saved it
+
+        getRequest.onsuccess = function(event) {
+            const data = event.target.result.data; // Here's your data
+            setChatData(data)
+            // Use the data as needed in your application
+        };
+    };
+
+    request.onerror = function(event) {
+        console.error('Database error: ', event.target.error);
+    };
+}
+function setChatData(data){
+    chatData = data
+    console.log(chatData)
+    newChat()
+}
+function newChat(){
+    chatID = Object.keys(chatData).length
+    // chatData[chatID] = []
+    messages = []
+    title = "New chat"
+    // saveDataToIndexedDB(chatData)
+    removeElementsByClass("messageContainer")
+    displayAllChats()
+}
+function displayAllChats(){
+    const myListElement = document.querySelector("#chatList")
+    removeAllChildren(myListElement)
+
+    for (const [key, value] of Object.entries(chatData)) {
+        // console.log(key == undefined)
+        if (key !== "undefined") {
+            let myListItemElement = document.createElement("li")
+            let paragraph = document.createElement("p")
+            if (!loadedData.dark){
+                myListItemElement.classList.add("light");
+            }
+
+            myListItemElement.id = key
+            paragraph.textContent = value.title
+            myListItemElement.appendChild(paragraph)
+            myListElement.prepend(myListItemElement)
+
+            myListItemElement.addEventListener("click", () =>{
+                loadChat(myListItemElement.id)
+            })
+        }
+
+    }
+
+}
+function removeAllChildren(element) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+function removeElementsByClass(className) {
+    // Select all elements with the specified class
+    const elements = document.querySelectorAll('.' + className);
+
+    // Loop through the NodeList and remove each element
+    elements.forEach(element => {
+        element.remove();
+    });
+}
+function loadChat(id){
+    messages = chatData[id].messages
+    chatID = id
+    title = chatData[id].title
+    document.querySelector("#welcomeMessageBox").style.display = "none"
+
+
+    removeElementsByClass("messageContainer")
+    for (let i = 0; i < messages.length; i++){
+        if (messages[i].role === "user"){
+            createMessageElement(userPP, "You", messages[i].content);
+        }
+        if (messages[i].role === "assistant"){
+            createMessageElement(aiPP, messages[i].model, messages[i].content);
+        }
+        let chatBoxesContainer = document.querySelector("#chatBoxesContainer")
+        chatBoxesContainer.scrollTop = chatBoxesContainer.scrollHeight;
+
+    }
+}
 function getResponseFromOllama(prompt, model) {
     // Push the new user message to the messages array
     messages.push({"role": 'user', "content": prompt}); // Fixed: use the prompt parameter instead of the string "prompt"
@@ -43,19 +170,21 @@ function getResponseFromOllama(prompt, model) {
             function read() {
                 reader.read().then(({done, value}) => {
                     if (done) {
-                        console.log('Stream finished.');
-                        messages.push({"role": "assistant", "content": chat}); // Append the accumulated response once done
-                        // console.log(messages); // Log messages at the end of the stream
-                        // let newMSG = reverseRole(messages)
-                        // console.log(newMSG)
-                        // getResponseFromOllama(newMSG[newMSG.length-1].content, model)
-                        // return;
+                        // console.log('Stream finished.');
+                        messages.push({"role": "assistant", "content": chat, "model": model}); // Append the accumulated response once done
+                        // console.log(chatID)
+                        // console.log(messages)
+                        chatData[chatID] = {"title": title, "messages": messages}
+                        // console.log(chatData)
+                        saveOrUpdateDataInIndexedDB(chatData)
+                        displayAllChats()
+                        return
                     }
 
                     // Decode and process the chunk
                     const chunk = decoder.decode(value, {stream: true});
                     const ck = JSON.parse(chunk);
-                    console.log(ck.message); // Log each message chunk
+                    // console.log(ck.message); // Log each message chunk
 
                     // Accumulate the response
                     if (ck.message && ck.message.content) {
@@ -68,7 +197,7 @@ function getResponseFromOllama(prompt, model) {
                     // Continue reading
                     read();
                 }).catch(error => {
-                    console.error('Stream reading failed:', error);
+                    // console.error('Stream reading failed:', error);
                 });
             }
 
@@ -147,16 +276,18 @@ async function getModels() {
     }
 }
 function toggleOptions() {
-    document.querySelector('.options').classList.toggle('show');
+    const optionsList = document.querySelector('.options');
+    optionsList.classList.toggle('show');
 }
 function selectOption(value) {
     document.querySelector('#model').textContent = value;
+    localStorage.setItem("lastUsedModel", JSON.stringify(value))
     toggleOptions();
 }
 function hideModelList(){
-    var dropdowns = document.getElementsByClassName("options");
-    for (var i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
+    let dropdowns = document.getElementsByClassName("options");
+    for (let i = 0; i < dropdowns.length; i++) {
+        let openDropdown = dropdowns[i];
         if (openDropdown.classList.contains('show')) {
             openDropdown.classList.remove('show');
         }
@@ -191,13 +322,14 @@ function setDarkMode(darkMode){
             element.classList.remove('light');
         }
     });
+
+    localStorage.setItem("dark", JSON.stringify(darkMode))
 }
 
-function listModels(){
-    getModels().then(data => {
+function listModels(dark, lastModel){
+    getModels().then((data) => {
         // console.log(data.models)
         let models = data.models
-        selectOption(removeLatest(models[0].name))
         for (let i = 0; i < models.length ; i++) {
             let listElement = document.createElement("li")
             listElement.textContent = removeLatest(models[i].name)
@@ -210,8 +342,19 @@ function listModels(){
                 selectOption(name)
             })
         }
+        if (lastModel) {
+            selectOption(lastModel)
+        }
+        else{
+            selectOption("None")
+        }
         hideModelList()
     })
+}
+function loadStuff(){
+    let drk = JSON.parse(localStorage.getItem("dark"))
+    let lastModel = JSON.parse(localStorage.getItem("lastUsedModel"))
+    return {"dark": drk, "lastUsedModel": lastModel}
 }
 
 document.querySelector("#messageBox").addEventListener('keydown', (event) => {
@@ -221,6 +364,14 @@ document.querySelector("#messageBox").addEventListener('keydown', (event) => {
         document.querySelector("#messageBox").value = ""
     }
 })
+document.querySelector('#newChatButton').addEventListener('click', () => {
+    document.querySelector("#welcomeMessageBox").style.display = "flex"
+    newChat()
+})
+document.querySelector(".selected-option").addEventListener('click', toggleOptions);
+// document.querySelector("#model").addEventListener('click', toggleOptions)
+// document.querySelector("#modelArrow").addEventListener('click', toggleOptions)
+
 // Close the dropdown if the user clicks outside of it
 window.onclick = function(event) {
     if (!event.target.matches('.selected-option')) {
@@ -234,5 +385,10 @@ window.addEventListener('keydown', function(event) {
     document.querySelector("#messageBox").focus()
 });
 
-listModels()
-setDarkMode(dark)
+loadedData = loadStuff()
+
+listModels(loadedData.dark, loadedData.lastUsedModel)
+setDarkMode(loadedData.dark)
+
+// saveOrUpdateDataInIndexedDB({})
+loadDataFromIndexedDB()

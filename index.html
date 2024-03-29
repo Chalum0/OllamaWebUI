@@ -18,17 +18,20 @@
                     New Chat
                 </div>
             </div>
-            <ul>
-            </ul>
+            <div id="chatListContainer">
+                <ul id="chatList">
+                </ul>
+            </div>
+
             <div></div>
         </nav>
 
         <div id="chatSide" class="light">
             <div id="modelSelectorNav" class="light">
                 <div class="select-container light">
-                    <div class="selected-option light" onclick="toggleOptions()">
-                        <p onclick="toggleOptions()" id="model"></p>
-                        <p onclick="toggleOptions()" >▼</p>
+                    <div class="selected-option light">
+                        <div id="model"></div>
+                        <div id="modelArrow">▼</div>
                     </div>
                     <ul class="options light">
                     </ul>
