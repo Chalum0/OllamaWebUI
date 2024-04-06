@@ -117,6 +117,31 @@ function removeElementsByClass(className) {
         element.remove();
     });
 }
+
+// Copy code
+function formatMessageContent(message) {
+    // Escape HTML to prevent XSS
+    let escapedMessage = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    // Replace newlines with <br> for normal text
+    escapedMessage = escapedMessage.replace(/\n/g, '<br>');
+
+    // Detect and format code blocks
+    const codeBlockRegex = /```(.*?)```/gs;
+    const highlightedRegex = /`(.*?)`/gs;
+    let formattedMessage = escapedMessage.replace(codeBlockRegex, (match, code) => {
+        // Here, `code` is the extracted code block content without the delimiters
+        return `<br><div class="code-block"><pre><code>${code}</code></pre></div><br>`;
+    });
+
+    formattedMessage = formattedMessage.replace(highlightedRegex, (match, code) => {
+        return `<span class="inline-code">${code}</span>`;
+    })
+
+    return formattedMessage;
+}
+
+
 function loadChat(id){
     messages = chatData[id].messages
     chatID = id
@@ -189,7 +214,8 @@ function getResponseFromOllama(prompt, model) {
                     // Accumulate the response
                     if (ck.message && ck.message.content) {
                         chat += ck.message.content; // Accumulate the response content
-                        paragraph.textContent = chat; // Update the DOM element with the current chat content
+                        paragraph.innerHTML = formatMessageContent(chat);
+                        // paragraph.innerHTML = chat.replace(/\n/g, '<br>'); // Convert newlines to <br> for HTML rendering
                         const chatBoxesContainer = document.getElementById('chatBoxesContainer');
                         chatBoxesContainer.scrollTop = chatBoxesContainer.scrollHeight;
                     }

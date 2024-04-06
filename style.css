@@ -371,3 +371,28 @@ nav.light{
     background-color: #FFFFFF;
 }
 
+.code-block {
+    background-color: #100f0f; /* Light gray background */
+    border-radius: 8px;
+    color: white;
+    /*border: 1px solid #ddd; !* Light gray border *!*/
+    /*border-left: 3px solid #f36d33; !* Accent color on the left border *!*/
+    padding: 10px;
+    overflow-x: auto; /* Makes it scrollable horizontally */
+    margin-bottom: 10px; /* Space below the code block */
+}
+
+code {
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+.inline-code {
+    background-color: #f5f5f5; /* Light gray background */
+    border-radius: 4px; /* Rounded corners */
+    font-family: monospace;
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #333;
+}
+
